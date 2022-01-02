@@ -4,7 +4,7 @@
   "description": "Robust TypeScript client for the unofficial Notion API.",
   "repository": "mm-tech-inc/react-notion-x",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "@mm-tech-inc:registry": "https://npm.pkg.github.com/"
   },
   "author": "Travis Fischer <travis@transitivebullsh.it>",
   "license": "MIT",
@@ -27,5 +27,5 @@
   "devDependencies": {
     "ava": "^3.15.0"
   },
-  "gitHead": "5b3ca4585ac8b569b5dba2c1fd1c75804f8a093e"
+  "gitHead": "b87724d6a37d15643519cc66f40ae6a45b5b8185"
 }
