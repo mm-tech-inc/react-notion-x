@@ -2,7 +2,7 @@
   "name": "react-notion-x",
   "version": "4.13.0",
   "description": "Fast and accurate React renderer for Notion.",
-  "repository": "harajune/react-notion-x",
+  "repository": "mm-tech-inc/react-notion-x",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
@@ -45,5 +45,6 @@
   "peerDependencies": {
     "react": ">=16",
     "react-dom": ">=16"
-  }
+  },
+  "gitHead": "5b3ca4585ac8b569b5dba2c1fd1c75804f8a093e"
 }
