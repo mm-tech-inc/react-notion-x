@@ -1,6 +1,6 @@
 {
   "name": "@mm-tech-inc/notion-client",
-  "version": "4.12.0",
+  "version": "4.12.1",
   "description": "Robust TypeScript client for the unofficial Notion API.",
   "repository": "mm-tech-inc/react-notion-x",
   "publishConfig": {
