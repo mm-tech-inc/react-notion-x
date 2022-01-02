@@ -1,6 +1,6 @@
 {
   "name": "@mm-tech-inc/notion-types",
-  "version": "4.21.0",
+  "version": "4.10.0",
   "description": "TypeScript types for core Notion data structures.",
   "repository": "mm-tech-inc/react-notion-x",
   "publishConfig": {
