@@ -19,8 +19,8 @@
     "test": "ava -v 'build/cjs/**/*.test.js'"
   },
   "dependencies": {
-    "@mm-tech-inc/notion-types": "4.21.0",
-    "@mm-tech-inc/notion-utils": "^4.22.0",
+    "notion-types": "npm:@mm-tech-inc/notion-types@^4.21.0",
+    "notion-utils": "npm:@mm-tech-inc/notion-utils@^4.22.0",
     "got": "^11.8.1",
     "p-map": "^4.0.0"
   },
