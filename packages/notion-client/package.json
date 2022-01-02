@@ -1,6 +1,6 @@
 {
   "name": "notion-client",
-  "version": "4.12.0",
+  "version": "4.13.0",
   "description": "Robust TypeScript client for the unofficial Notion API.",
   "repository": "harajune/react-notion-x",
   "publishConfig": {
@@ -20,8 +20,8 @@
   },
   "dependencies": {
     "got": "^11.8.1",
-    "notion-types": "^4.10.0",
-    "notion-utils": "^4.12.0",
+    "notion-types": "^4.13.0",
+    "notion-utils": "^4.13.0",
     "p-map": "^4.0.0"
   },
   "devDependencies": {

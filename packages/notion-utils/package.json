@@ -1,6 +1,6 @@
 {
   "name": "notion-utils",
-  "version": "4.12.0",
+  "version": "4.13.0",
   "description": "Useful utilities for working with Notion data. Isomorphic.",
   "repository": "harajune/react-notion-x",
   "publishConfig": {
@@ -19,7 +19,7 @@
     "test": "ava -v 'build/cjs/**/*.test.js'"
   },
   "dependencies": {
-    "notion-types": "^4.10.0",
+    "notion-types": "^4.13.0",
     "p-queue": "6"
   },
   "devDependencies": {
