@@ -19,7 +19,7 @@
     "test": "ava -v 'build/cjs/**/*.test.js'"
   },
   "dependencies": {
-    "notion-types": "npm:@mm-tech-inc/notion-types@^4.21.0",
+    "notion-types": "^4.10.0",
     "p-queue": "6"
   },
   "devDependencies": {

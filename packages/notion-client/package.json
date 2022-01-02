@@ -20,8 +20,8 @@
   },
   "dependencies": {
     "got": "^11.8.1",
-    "notion-types": "npm:@mm-tech-inc/notion-types@^4.21.0",
-    "notion-utils": "npm:@mm-tech-inc/notion-utils@^4.22.0",
+    "notion-types": "^4.10.0",
+    "notion-utils": "^4.12.0",
     "p-map": "^4.0.0"
   },
   "devDependencies": {
