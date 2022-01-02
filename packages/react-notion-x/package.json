@@ -1,5 +1,5 @@
 {
-  "name": "react-notion-x",
+  "name": "@mm-tech-inc/react-notion-x",
   "version": "4.17.0",
   "description": "Fast and accurate React renderer for Notion.",
   "repository": "mm-tech-inc/react-notion-x",
@@ -46,5 +46,5 @@
     "react": ">=16",
     "react-dom": ">=16"
   },
-  "gitHead": "46c14f063d0ee95b7f216258bee2421a1a573dfd"
+  "gitHead": "898720627031c08b08fe315b3c769dcec13daa60"
 }

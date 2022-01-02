@@ -1,5 +1,5 @@
 {
-  "name": "notion-utils",
+  "name": "@mm-tech-inc/notion-utils",
   "version": "4.17.0",
   "description": "Useful utilities for working with Notion data. Isomorphic.",
   "repository": "mm-tech-inc/react-notion-x",
@@ -25,5 +25,5 @@
   "devDependencies": {
     "ava": "^3.15.0"
   },
-  "gitHead": "46c14f063d0ee95b7f216258bee2421a1a573dfd"
+  "gitHead": "898720627031c08b08fe315b3c769dcec13daa60"
 }
