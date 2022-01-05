@@ -6,6 +6,7 @@ export * from './context'
 // users may want to dynamically load these dependencies
 export * from './components/code'
 export * from './components/search-dialog'
+export * from './icons/search-icon'
 export * from './components/collection'
 export * from './components/collection-row'
 export * from './components/page-icon'
