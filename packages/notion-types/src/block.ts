@@ -37,6 +37,9 @@ export type BlockType =
   | 'collection_view_page'
   | 'transclusion_container'
   | 'transclusion_reference'
+  | 'alias'
+  | 'table'
+  | 'table_row'
   // fallback for unknown blocks
   | string
 
@@ -78,6 +81,9 @@ export type Block =
   | CollectionViewPageBlock
   | SyncBlock
   | SyncPointerBlock
+  | PageLink
+  | TableBlock
+  | TableRowBlock
 
 /**
  * Base properties shared by all blocks.
@@ -181,14 +187,26 @@ export interface NumberedListBlock extends BaseTextBlock {
 
 export interface HeaderBlock extends BaseTextBlock {
   type: 'header'
+  format?: {
+    block_color: Color,
+    toggleable?: boolean
+  }
 }
 
 export interface SubHeaderBlock extends BaseTextBlock {
   type: 'sub_header'
+  format?: {
+    block_color: Color,
+    toggleable?: boolean
+  }
 }
 
 export interface SubSubHeaderBlock extends BaseTextBlock {
   type: 'sub_sub_header'
+  format?: {
+    block_color: Color,
+    toggleable?: boolean
+  }
 }
 
 export interface QuoteBlock extends BaseTextBlock {
@@ -371,5 +389,39 @@ export interface SyncPointerBlock extends BaseBlock {
       id: string
       spaceId: string
     }
+  }
+}
+
+export interface PageLink extends BaseBlock {
+  type: 'alias'
+  format: {
+    alias_pointer: {
+      id: string
+    }
+  }
+}
+
+export interface TableBlock extends BaseBlock {
+  type: 'table'
+  collection_id: ID
+  format: {
+    collection_pointer: {
+      id: ID
+      table: string
+      spaceId: ID
+    }
+    table_block_column_format?: {
+      [column: string]: { width?: number; color?: Color }
+    }
+    table_block_column_header: boolean
+    table_block_column_order: string[]
+  }
+  view_ids: ID[]
+}
+
+export interface TableRowBlock extends BaseBlock {
+  type: 'table_row'
+  properties: {
+    [column: string]: Decoration[]
   }
 }
