@@ -1,9 +1,12 @@
 {
-  "name": "notion-compat",
+  "name": "@mm-tech-inc/notion-compat",
   "version": "6.12.6",
   "type": "module",
   "description": "Compatibility layer between the official Notion API and unofficial private API.",
-  "repository": "NotionX/react-notion-x",
+  "repository": "mm-tech-inc/react-notion-x",
+  "publishConfig": {
+    "@mm-tech-inc:registry": "https://npm.pkg.github.com/"
+  },
   "author": "Travis Fischer <travis@transitivebullsh.it>",
   "license": "MIT",
   "main": "./build/index.js",
