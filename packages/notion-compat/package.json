@@ -1,6 +1,6 @@
 {
   "name": "@mm-tech-inc/notion-compat",
-  "version": "6.12.6",
+  "version": "6.12.7",
   "type": "module",
   "description": "Compatibility layer between the official Notion API and unofficial private API.",
   "repository": "mm-tech-inc/react-notion-x",
