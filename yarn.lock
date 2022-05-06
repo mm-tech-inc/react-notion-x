@@ -4447,9 +4447,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001332, caniuse-lite@^1.0.30001335:
-  version "1.0.30001336"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001336.tgz#a9eb13edd2613f418ebc632c8d6c9ab9fde7ccc4"
-  integrity sha512-/YxSlBmL7iKXTbIJ48IQTnAOBk7XmWsxhBF1PZLOko5Dt9qc4Pl+84lfqG3Tc4EuavurRn1QLoVJGxY2iSycfw==
+  version "1.0.30001338"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001338.tgz#b5dd7a7941a51a16480bdf6ff82bded1628eec0d"
+  integrity sha512-1gLHWyfVoRDsHieO+CaeYe7jSo/MT7D7lhaXUiwwbuR5BwQxORs0f1tAwUSQr3YbxRXJvxHM/PA5FfPQRnsPeQ==
 
 case-sensitive-paths-webpack-plugin@^2.4.0:
   version "2.4.0"
@@ -9591,6 +9591,15 @@ notion-client@^6.12.6:
     notion-types "^6.12.6"
     notion-utils "^6.12.6"
     p-map "^5.3.0"
+
+notion-compat@^6.12.6:
+  version "6.12.6"
+  resolved "https://registry.yarnpkg.com/notion-compat/-/notion-compat-6.12.6.tgz#1d2c7e2b20063cbcd16008718341dfd7b46996c5"
+  integrity sha512-0ODB3IUe4CqU9Q5yxc5HNkX3rk4wtqG/DS9FVc7i5y3semhbgu5FpseuKSe3mcxoG6A1Tw9/buMfX1uJkfxMkA==
+  dependencies:
+    notion-types "^6.12.6"
+    notion-utils "^6.12.6"
+    p-queue "^7.2.0"
 
 notion-types@^6.12.6:
   version "6.12.6"
