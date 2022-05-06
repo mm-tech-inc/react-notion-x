@@ -4,7 +4,7 @@
   "useWorkspaces": true,
   "packages": [
     "packages/*",
-    "example/"
+    "examples/"
   ],
   "command": {
     "publish": {
