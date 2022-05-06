@@ -1,6 +1,5 @@
-import React from 'react'
+import * as React from 'react'
 import { GoogleDriveBlock } from 'notion-types'
-import { formatDistance } from 'date-fns'
 
 import { useNotionContext } from '../context'
 import { cs } from '../utils'
@@ -24,7 +23,7 @@ export const GoogleDrive: React.FC<{
 
   return (
     <div className={cs('notion-google-drive', className)}>
-      <components.link
+      <components.Link
         className='notion-google-drive-link'
         href={properties.url}
         target='_blank'
@@ -45,17 +44,14 @@ export const GoogleDrive: React.FC<{
             </div>
           )}
 
-          {properties.modified_time && (
+          {/* TODO: re-add last modified time with alternative to timeago.js */}
+          {/* {properties.modified_time && (
             <div className='notion-google-drive-body-modified-time'>
               Last modified{' '}
               {properties.user_name ? `by ${properties.user_name} ` : ''}
-              {formatDistance(
-                new Date(properties.modified_time),
-                new Date()
-              )}{' '}
-              ago
+              {timeago(properties.modified_time)}
             </div>
-          )}
+          )} */}
 
           {properties.icon && domain && (
             <div className='notion-google-drive-body-source'>
@@ -76,7 +72,7 @@ export const GoogleDrive: React.FC<{
             </div>
           )}
         </div>
-      </components.link>
+      </components.Link>
     </div>
   )
 }

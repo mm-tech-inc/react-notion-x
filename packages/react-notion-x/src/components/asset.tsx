@@ -1,13 +1,15 @@
-import React from 'react'
+import * as React from 'react'
 import { BaseContentBlock, Block } from 'notion-types'
 import { getTextContent } from 'notion-utils'
 
 import { useNotionContext } from '../context'
 import { LazyImage } from './lazy-image'
+import { LiteYouTubeEmbed } from './lite-youtube-embed'
+import { getYoutubeId } from '../utils'
 
 const isServer = typeof window === 'undefined'
 
-const types = [
+const supportedAssetTypes = [
   'video',
   'image',
   'embed',
@@ -25,10 +27,11 @@ const types = [
 export const Asset: React.FC<{
   block: BaseContentBlock
   children: any
-}> = ({ block, children }) => {
+  zoomable?: boolean
+}> = ({ block, zoomable = true, children }) => {
   const { recordMap, mapImageUrl, components } = useNotionContext()
 
-  if (!block || !types.includes(block.type)) {
+  if (!block || !supportedAssetTypes.includes(block.type)) {
     return null
   }
 
@@ -57,13 +60,20 @@ export const Asset: React.FC<{
 
     if (block_full_width || block_page_width) {
       if (block_full_width) {
-         style.width = '100vw'
-       } else {
-         style.width = '100%'
-       }
-      
-      if (block_aspect_ratio && block.type !== 'image') {
-        // console.log(block.type, block)
+        style.width = '100vw'
+      } else {
+        style.width = '100%'
+      }
+
+      if (block.type === 'video') {
+        if (block_height) {
+          style.height = block_height
+        } else if (block_aspect_ratio) {
+          style.paddingBottom = `${block_aspect_ratio * 100}%`
+        } else if (block_preserve_scale) {
+          style.objectFit = 'contain'
+        }
+      } else if (block_aspect_ratio && block.type !== 'image') {
         style.paddingBottom = `${block_aspect_ratio * 100}%`
       } else if (block_height) {
         style.height = block_height
@@ -91,13 +101,20 @@ export const Asset: React.FC<{
       }
     }
 
-    if (block_preserve_scale || block.type === 'image') {
+    if (block.type === 'image') {
+      assetStyle.objectFit = 'cover'
+    } else if (block_preserve_scale) {
       assetStyle.objectFit = 'contain'
     }
   }
 
-  const source = block.properties?.source?.[0]?.[0]
+  const source =
+    recordMap.signed_urls?.[block.id] || block.properties?.source?.[0]?.[0]
   let content = null
+
+  if (!source) {
+    return null
+  }
 
   if (block.type === 'tweet') {
     const src = source
@@ -116,20 +133,20 @@ export const Asset: React.FC<{
           marginRight: 'auto'
         }}
       >
-        <components.tweet id={id} />
+        <components.Tweet id={id} />
       </div>
     )
   } else if (block.type === 'pdf') {
     style.overflow = 'auto'
-    style.padding = '8px 16px'
     style.background = 'rgb(226, 226, 226)'
 
-    if (!isServer) {
-      const signedUrl = recordMap.signed_urls?.[block.id]
-      if (!signedUrl) return null
-      // console.log('pdf', block, signedUrl)
+    if (!style.padding) {
+      style.padding = '8px 16px'
+    }
 
-      content = <components.pdf file={signedUrl} />
+    if (!isServer) {
+      // console.log('pdf', block, signedUrl)
+      content = <components.Pdf file={source} />
     }
   } else if (
     block.type === 'embed' ||
@@ -142,38 +159,50 @@ export const Asset: React.FC<{
     block.type === 'codepen' ||
     block.type === 'drive'
   ) {
-    const signedUrl = recordMap.signed_urls[block.id]
-
     if (
       block.type === 'video' &&
-      signedUrl &&
-      signedUrl.indexOf('youtube') < 0 &&
-      signedUrl.indexOf('youtu.be') < 0 &&
-      signedUrl.indexOf('vimeo') < 0 &&
-      signedUrl.indexOf('wistia') < 0 &&
-      signedUrl.indexOf('loom') < 0 &&
-      signedUrl.indexOf('videoask') < 0 &&
-      signedUrl.indexOf('getcloudapp') < 0
+      source &&
+      source.indexOf('youtube') < 0 &&
+      source.indexOf('youtu.be') < 0 &&
+      source.indexOf('vimeo') < 0 &&
+      source.indexOf('wistia') < 0 &&
+      source.indexOf('loom') < 0 &&
+      source.indexOf('videoask') < 0 &&
+      source.indexOf('getcloudapp') < 0
     ) {
+      style.paddingBottom = undefined
+
       content = (
         <video
           playsInline
           controls
           preload='metadata'
           style={assetStyle}
-          src={signedUrl}
+          src={source}
           title={block.type}
         />
       )
     } else {
-      let src = block.format?.display_source ?? source
+      let src = block.format?.display_source || source
 
       if (src) {
-        if (block.type === 'gist' && !src.endsWith('.pibb')) {
-          src = `${src}.pibb`
-        }
+        const youtubeVideoId: string | null =
+          block.type === 'video' ? getYoutubeId(src) : null
+        // console.log({ youtubeVideoId, src, format: block.format, style })
 
-        if (block.type === 'gist') {
+        if (youtubeVideoId) {
+          content = (
+            <LiteYouTubeEmbed
+              id={youtubeVideoId}
+              style={assetStyle}
+              className='notion-asset-object-fit'
+            />
+          )
+        } else if (block.type === 'gist') {
+          if (!src.endsWith('.pibb')) {
+            src = `${src}.pibb`
+          }
+
           assetStyle.width = '100%'
           style.paddingBottom = '50%'
 
@@ -205,6 +234,7 @@ export const Asset: React.FC<{
               allowFullScreen
               // this is important for perf but react's TS definitions don't seem to like it
               loading='lazy'
+              scrolling='auto'
             />
           )
         }
@@ -212,8 +242,8 @@ export const Asset: React.FC<{
     }
   } else if (block.type === 'image') {
     // console.log('image', block)
-    const signedUrl = recordMap.signed_urls?.[block.id]
-    const src = mapImageUrl(signedUrl || source, block as Block)
+
+    const src = mapImageUrl(source, block as Block)
     const caption = getTextContent(block.properties?.caption)
     const alt = caption || 'notion image'
 
@@ -221,7 +251,7 @@ export const Asset: React.FC<{
       <LazyImage
         src={src}
         alt={alt}
-        zoomable={false}
+        zoomable={zoomable}
         height={style.height as number}
         style={assetStyle}
       />
@@ -234,6 +264,7 @@ export const Asset: React.FC<{
         {content}
         {block.type === 'image' && children}
       </div>
+
       {block.type !== 'image' && children}
     </>
   )

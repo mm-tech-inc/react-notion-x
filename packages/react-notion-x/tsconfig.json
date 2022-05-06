@@ -3,10 +3,10 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": "src",
-    "outDir": "build/esm",
-    "tsBuildInfoFile": "build/esm/index.tsbuildinfo",
+    "outDir": "build",
+    "tsBuildInfoFile": "build/.tsbuildinfo",
+    "emitDeclarationOnly": true,
     "lib": ["DOM", "ESNext"],
-    "strict": false,
     "noImplicitReturns": false,
     "skipLibCheck": true,
     "jsx": "react"

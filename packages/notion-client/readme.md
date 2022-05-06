@@ -6,7 +6,7 @@
 
 > Robust TypeScript client for the unofficial Notion API.
 
-[![NPM](https://img.shields.io/npm/v/notion-client.svg)](https://www.npmjs.com/package/notion-client) [![Build Status](https://travis-ci.com/NotionX/react-notion-x.svg?branch=master)](https://travis-ci.com/NotionX/react-notion-x) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg)](https://prettier.io)
+[![NPM](https://img.shields.io/npm/v/notion-client.svg)](https://www.npmjs.com/package/notion-client) [![Build Status](https://github.com/NotionX/react-notion-x/actions/workflows/test.yml/badge.svg)](https://github.com/NotionX/react-notion-x/actions/workflows/test.yml) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg)](https://prettier.io)
 
 ## Install
 
@@ -38,7 +38,7 @@ const colectionData = await api.getCollectionData(
 
 ## Docs
 
-See the [auto-generated docs](https://github.com/NotionX/react-notion-x/blob/master/docs/notion-client.md).
+See the [full docs](https://github.com/NotionX/react-notion-x).
 
 ## License
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import { FileBlock } from 'notion-types'
 
 import { FileIcon } from '../icons/file-icon'
@@ -11,13 +11,14 @@ export const File: React.FC<{
   className?: string
 }> = ({ block, className }) => {
   const { components, recordMap } = useNotionContext()
-  const signedUrl = recordMap.signed_urls[block.id]
+  const source =
+    recordMap.signed_urls[block.id] || block.properties?.source?.[0]?.[0]
 
   return (
     <div className={cs('notion-file', className)}>
-      <components.link
+      <components.Link
         className='notion-file-link'
-        href={signedUrl}
+        href={source}
         target='_blank'
         rel='noopener noreferrer'
       >
@@ -34,7 +35,7 @@ export const File: React.FC<{
             </div>
           )}
         </div>
-      </components.link>
+      </components.Link>
     </div>
   )
 }

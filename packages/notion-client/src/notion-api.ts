@@ -1,7 +1,13 @@
+// import { promises as fs } from 'fs'
 import got, { OptionsOfJSONResponseBody } from 'got'
 import pMap from 'p-map'
 
-import { parsePageId, getPageContentBlockIds, uuidToId } from 'notion-utils'
+import {
+  parsePageId,
+  getPageContentBlockIds,
+  uuidToId,
+  getBlockCollectionId
+} from 'notion-utils'
 import * as notion from 'notion-types'
 
 import * as types from './types'
@@ -37,17 +43,27 @@ export class NotionAPI {
     pageId: string,
     {
       concurrency = 3,
+      fetchMissingBlocks = true,
       fetchCollections = true,
       signFileUrls = true,
+      chunkLimit = 100,
+      chunkNumber = 0,
       gotOptions
     }: {
       concurrency?: number
+      fetchMissingBlocks?: boolean
       fetchCollections?: boolean
       signFileUrls?: boolean
+      chunkLimit?: number
+      chunkNumber?: number
       gotOptions?: OptionsOfJSONResponseBody
     } = {}
   ): Promise<notion.ExtendedRecordMap> {
-    const page = await this.getPageRaw(pageId, gotOptions)
+    const page = await this.getPageRaw(pageId, {
+      chunkLimit,
+      chunkNumber,
+      gotOptions
+    })
     const recordMap = page?.recordMap as notion.ExtendedRecordMap
 
     if (!recordMap?.block) {
@@ -64,21 +80,25 @@ export class NotionAPI {
     recordMap.collection_query = {}
     recordMap.signed_urls = {}
 
-    // fetch any missing content blocks
-    while (true) {
-      const pendingBlockIds = getPageContentBlockIds(recordMap).filter(
-        (id) => !recordMap.block[id]
-      )
+    if (fetchMissingBlocks) {
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        // fetch any missing content blocks
+        const pendingBlockIds = getPageContentBlockIds(recordMap).filter(
+          (id) => !recordMap.block[id]
+        )
 
-      if (!pendingBlockIds.length) {
-        break
+        if (!pendingBlockIds.length) {
+          break
+        }
+
+        const newBlocks = await this.getBlocks(
+          pendingBlockIds,
+          gotOptions
+        ).then((res) => res.recordMap.block)
+
+        recordMap.block = { ...recordMap.block, ...newBlocks }
       }
-
-      const newBlocks = await this.getBlocks(pendingBlockIds, gotOptions).then(
-        (res) => res.recordMap.block
-      )
-
-      recordMap.block = { ...recordMap.block, ...newBlocks }
     }
 
     const contentBlockIds = getPageContentBlockIds(recordMap)
@@ -89,16 +109,20 @@ export class NotionAPI {
     // Notion page is readily available for use cases involving server-side rendering
     // and edge caching.
     if (fetchCollections) {
-      const allCollectionInstances = contentBlockIds.flatMap((blockId) => {
+      const allCollectionInstances: Array<{
+        collectionId: string
+        collectionViewId: string
+      }> = contentBlockIds.flatMap((blockId) => {
         const block = recordMap.block[blockId].value
-
-        if (
+        const collectionId =
           block &&
           (block.type === 'collection_view' ||
-            block.type === 'collection_view_page')
-        ) {
-          return block.view_ids.map((collectionViewId) => ({
-            collectionId: block.collection_id,
+            block.type === 'collection_view_page') &&
+          getBlockCollectionId(block, recordMap)
+
+        if (collectionId) {
+          return block.view_ids?.map((collectionViewId) => ({
+            collectionId,
             collectionViewId
           }))
         } else {
@@ -156,7 +180,8 @@ export class NotionAPI {
           } catch (err) {
             // It's possible for public pages to link to private collections, in which case
             // Notion returns a 400 error
-            console.warn('NotionAPI collectionQuery error', err.message)
+            console.warn('NotionAPI collectionQuery error', pageId, err.message)
+            console.error(err)
           }
         },
         {
@@ -203,7 +228,10 @@ export class NotionAPI {
           block.type === 'file' ||
           block.type === 'page')
       ) {
-        const source = block.type === 'page' ? block.format?.page_cover : block.properties?.source?.[0]?.[0]
+        const source =
+          block.type === 'page'
+            ? block.format?.page_cover
+            : block.properties?.source?.[0]?.[0]
         // console.log(block, source)
 
         if (source) {
@@ -247,7 +275,15 @@ export class NotionAPI {
 
   public async getPageRaw(
     pageId: string,
-    gotOptions?: OptionsOfJSONResponseBody
+    {
+      gotOptions,
+      chunkLimit = 100,
+      chunkNumber = 0
+    }: {
+      chunkLimit?: number
+      chunkNumber?: number
+      gotOptions?: OptionsOfJSONResponseBody
+    } = {}
   ) {
     const parsedPageId = parsePageId(pageId)
 
@@ -257,9 +293,9 @@ export class NotionAPI {
 
     const body = {
       pageId: parsedPageId,
-      limit: 100,
+      limit: chunkLimit,
+      chunkNumber: chunkNumber,
       cursor: { stack: [] },
-      chunkNumber: 0,
       verticalColumns: false
     }
 
@@ -305,6 +341,7 @@ export class NotionAPI {
           loadContentCover
         }
       },
+      sort: [],
       ...collectionView?.query2,
       searchQuery,
       userTimeZone
@@ -332,6 +369,7 @@ export class NotionAPI {
           property,
           value: { value, type }
         } = group
+
         for (const iterator of iterators) {
           const iteratorProps =
             iterator === 'results'
@@ -383,6 +421,16 @@ export class NotionAPI {
         }
       }
 
+      //TODO: started working on the filters. This doens't seem to quite work yet.
+      // let filters = collectionView.format?.property_filters.map(filterObj => {
+      //   console.log('map filter', filterObj)
+      //   //get the inner filter
+      //   return {
+      //     filter: filterObj.filter.filter,
+      //     property: filterObj.filter.property
+      //   }
+      // })
+
       const reducerLabel = isBoardType ? 'board_columns' : `${type}_groups`
       loader = {
         type: 'reducer',
@@ -390,6 +438,9 @@ export class NotionAPI {
           [reducerLabel]: {
             type: 'groups',
             groupBy,
+            ...(collectionView?.query2?.filter && {
+              filter: collectionView?.query2?.filter
+            }),
             groupSortPreference: groups.map((group) => group?.value),
             limit
           },
@@ -398,8 +449,29 @@ export class NotionAPI {
         ...collectionView?.query2,
         searchQuery,
         userTimeZone
+        //TODO: add filters here
+        // filter: {
+        //   filters: filters,
+        //   operator: 'and'
+        // }
       }
     }
+
+    // if (isBoardType) {
+    //   console.log(
+    //     JSON.stringify(
+    //       {
+    //         collectionId,
+    //         collectionViewId,
+    //         loader,
+    //         groupBy: groupBy || 'NONE',
+    //         collectionViewQuery: collectionView.query2 || 'NONE'
+    //       },
+    //       null,
+    //       2
+    //     )
+    //   )
+    // }
 
     return this.fetch<notion.CollectionInstance>({
       endpoint: 'queryCollection',
@@ -464,28 +536,30 @@ export class NotionAPI {
     params: notion.SearchParams,
     gotOptions?: OptionsOfJSONResponseBody
   ) {
+    const body = {
+      type: 'BlocksInAncestor',
+      source: 'quick_find_public',
+      ancestorId: parsePageId(params.ancestorId),
+      sort: 'Relevance',
+      limit: params.limit || 20,
+      query: params.query,
+      filters: {
+        isDeletedOnly: false,
+        isNavigableOnly: false,
+        excludeTemplates: true,
+        requireEditPermissions: false,
+        ancestors: [],
+        createdBy: [],
+        editedBy: [],
+        lastEditedTime: {},
+        createdTime: {},
+        ...params.filters
+      }
+    }
+
     return this.fetch<notion.SearchResults>({
       endpoint: 'search',
-      body: {
-        type: 'BlocksInAncestor',
-        source: 'quick_find_public',
-        ancestorId: parsePageId(params.ancestorId),
-        sort: 'Relevance',
-        limit: params.limit || 20,
-        query: params.query,
-        filters: {
-          isDeletedOnly: false,
-          excludeTemplates: true,
-          isNavigableOnly: true,
-          requireEditPermissions: false,
-          ancestors: [],
-          createdBy: [],
-          editedBy: [],
-          lastEditedTime: {},
-          createdTime: {},
-          ...params.filters
-        }
-      },
+      body,
       gotOptions
     })
   }

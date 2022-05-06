@@ -78,6 +78,7 @@ export type StrikeFormat = ['s']
 export type CodeFormat = ['c']
 export type UnderlineFormat = ['_']
 export type LinkFormat = ['a', string]
+export type ExternalObjectInstanceFormat = ['eoi', string]
 export type ColorFormat = ['h', Color]
 export type UserFormat = ['u', string]
 export type PageFormat = ['p', string]
@@ -87,10 +88,13 @@ export type ExternalLinkFormat = ['‣', [string, string]]
 export type DateFormat = ['d', FormattedDate]
 
 export interface FormattedDate {
-  type: 'date' | 'daterange'
+  type: 'date' | 'daterange' | 'datetime' | 'datetimerange'
   start_date: string
+  start_time?: string
   end_date?: string
+  end_time?: string
   date_format?: string
+  time_zone?: string
 }
 
 export type SubDecoration =
@@ -107,6 +111,7 @@ export type SubDecoration =
   | PageFormat
   | ExternalLinkFormat
   | DiscussionFormat
+  | ExternalObjectInstanceFormat
 
 export type BaseDecoration = [string]
 export type AdditionalDecoration = [string, SubDecoration[]]

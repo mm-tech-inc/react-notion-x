@@ -1,16 +1,13 @@
+export { NotionRenderer } from './renderer'
+
 export * from './types'
 export * from './utils'
 export * from './context'
 
 // heavier dependencies that the core renderer should not depend on explicitly
 // users may want to dynamically load these dependencies
-export * from './components/code'
 export * from './components/search-dialog'
 export * from './icons/search-icon'
-export * from './components/collection'
-export * from './components/collection-row'
-export * from './components/page-icon'
-export * from './third-party'
 
-export { NotionRenderer } from './renderer'
-export type { NotionRendererProps } from './renderer'
+export * from './components/text'
+export * from './components/header'

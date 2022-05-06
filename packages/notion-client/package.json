@@ -1,6 +1,7 @@
 {
   "name": "@mm-tech-inc/notion-client",
-  "version": "4.15.0",
+  "version": "6.12.6",
+  "type": "module",
   "description": "Robust TypeScript client for the unofficial Notion API.",
   "repository": "mm-tech-inc/react-notion-x",
   "publishConfig": {
@@ -8,24 +9,36 @@
   },
   "author": "Travis Fischer <travis@transitivebullsh.it>",
   "license": "MIT",
-  "main": "build/cjs/index.js",
-  "module": "build/esm/index.js",
-  "typings": "build/esm/index.d.ts",
+  "main": "./build/index.js",
+  "module": "./build/index.js",
+  "types": "./build/index.d.ts",
   "sideEffects": false,
+  "files": [
+    "build"
+  ],
   "engines": {
     "node": ">=12"
   },
   "scripts": {
-    "test": "ava -v 'build/cjs/**/*.test.js'"
+    "build": "tsup",
+    "watch": "tsup --watch --silent --onSuccess 'echo build successful'",
+    "test": "ava"
   },
   "dependencies": {
     "got": "^11.8.1",
-    "notion-types": "^4.15.0",
-    "notion-utils": "^4.15.0",
-    "p-map": "^4.0.0"
+    "notion-types": "^6.12.6",
+    "notion-utils": "^6.12.6",
+    "p-map": "^5.3.0"
   },
-  "devDependencies": {
-    "ava": "^3.15.0"
-  },
-  "gitHead": "1d4566cc4b39ca6fc4d51845a08098722e41709e"
+  "ava": {
+    "snapshotDir": ".snapshots",
+    "extensions": {
+      "ts": "module"
+    },
+    "nodeArguments": [
+      "--loader=ts-node/esm",
+      "--no-warnings",
+      "--experimental-specifier-resolution=node"
+    ]
+  }
 }

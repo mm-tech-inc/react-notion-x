@@ -1,6 +1,7 @@
 {
   "name": "@mm-tech-inc/notion-utils",
-  "version": "4.15.0",
+  "version": "6.12.6",
+  "type": "module",
   "description": "Useful utilities for working with Notion data. Isomorphic.",
   "repository": "mm-tech-inc/react-notion-x",
   "publishConfig": {
@@ -8,22 +9,43 @@
   },
   "author": "Travis Fischer <travis@transitivebullsh.it>",
   "license": "MIT",
-  "main": "build/cjs/index.js",
-  "module": "build/esm/index.js",
-  "typings": "build/esm/index.d.ts",
+  "main": "./build/index.js",
+  "module": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    }
+  },
   "sideEffects": false,
+  "files": [
+    "build"
+  ],
   "engines": {
     "node": ">=12"
   },
   "scripts": {
-    "test": "ava -v 'build/cjs/**/*.test.js'"
+    "build": "tsup",
+    "watch": "tsup --watch --silent --onSuccess 'echo build successful'",
+    "test": "ava"
   },
   "dependencies": {
-    "notion-types": "^4.15.0",
-    "p-queue": "6"
+    "is-url-superb": "^6.1.0",
+    "mem": "^9.0.2",
+    "normalize-url": "^7.0.3",
+    "notion-types": "^6.12.6",
+    "p-queue": "^7.2.0"
   },
-  "devDependencies": {
-    "ava": "^3.15.0"
-  },
-  "gitHead": "1d4566cc4b39ca6fc4d51845a08098722e41709e"
+  "ava": {
+    "snapshotDir": ".snapshots",
+    "extensions": {
+      "ts": "module"
+    },
+    "nodeArguments": [
+      "--loader=ts-node/esm",
+      "--no-warnings",
+      "--experimental-specifier-resolution=node"
+    ]
+  }
 }

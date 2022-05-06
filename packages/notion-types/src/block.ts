@@ -40,6 +40,9 @@ export type BlockType =
   | 'alias'
   | 'table'
   | 'table_row'
+  | 'external_object_instance'
+  | 'breadcrumb'
+  | 'miro'
   // fallback for unknown blocks
   | string
 
@@ -84,6 +87,8 @@ export type Block =
   | PageLink
   | TableBlock
   | TableRowBlock
+  | ExternalObjectInstance
+  | BreadcrumbInstance
 
 /**
  * Base properties shared by all blocks.
@@ -92,7 +97,7 @@ export interface BaseBlock {
   id: ID
   type: BlockType
   properties?: any
-  format?: object
+  format?: any
   content?: ID[]
 
   space_id?: ID
@@ -188,7 +193,7 @@ export interface NumberedListBlock extends BaseTextBlock {
 export interface HeaderBlock extends BaseTextBlock {
   type: 'header'
   format?: {
-    block_color: Color,
+    block_color: Color
     toggleable?: boolean
   }
 }
@@ -196,7 +201,7 @@ export interface HeaderBlock extends BaseTextBlock {
 export interface SubHeaderBlock extends BaseTextBlock {
   type: 'sub_header'
   format?: {
-    block_color: Color,
+    block_color: Color
     toggleable?: boolean
   }
 }
@@ -204,7 +209,7 @@ export interface SubHeaderBlock extends BaseTextBlock {
 export interface SubSubHeaderBlock extends BaseTextBlock {
   type: 'sub_sub_header'
   format?: {
-    block_color: Color,
+    block_color: Color
     toggleable?: boolean
   }
 }
@@ -314,6 +319,10 @@ export interface AudioBlock extends BaseContentBlock {
   type: 'audio'
 }
 
+export interface MiroBlock extends BaseContentBlock {
+  type: 'miro'
+}
+
 export interface FileBlock extends BaseBlock {
   type: 'file'
   properties: {
@@ -364,14 +373,28 @@ export interface CodeBlock extends BaseBlock {
 
 export interface CollectionViewBlock extends BaseContentBlock {
   type: 'collection_view'
-  collection_id: ID
+  collection_id?: ID
   view_ids: ID[]
+  format?: BaseContentBlock['format'] & {
+    collection_pointer?: {
+      id: ID
+      spaceId: ID
+      table: string
+    }
+  }
 }
 
 export interface CollectionViewPageBlock extends BasePageBlock {
   type: 'collection_view_page'
-  collection_id: ID
+  collection_id?: ID
   view_ids: ID[]
+  format: BasePageBlock['format'] & {
+    collection_pointer?: {
+      id: ID
+      spaceId: ID
+      table: string
+    }
+  }
 }
 
 export interface SyncBlock extends BaseBlock {
@@ -424,4 +447,16 @@ export interface TableRowBlock extends BaseBlock {
   properties: {
     [column: string]: Decoration[]
   }
+}
+
+export interface ExternalObjectInstance extends BaseBlock {
+  type: 'external_object_instance'
+  format: {
+    domain: string
+    original_url: string
+  }
+}
+
+export interface BreadcrumbInstance extends BaseBlock {
+  type: 'breadcrumb'
 }
